@@ -1,0 +1,343 @@
+<!-- DTD for AGI's ResNet Exchange Format (RNEF 1.2)  -->
+
+<!-- a document is a batch of zero or more resnets -->
+<!ELEMENT batch (properties?,resnet*)>
+
+<!-- a resnet is a bunch of nodes, followed by a bunch of controls.
+ Optionally, it can start with some properties and end with attachments -->
+<!ELEMENT resnet (properties?,nodes,controls,attachments?)>
+<!-- mref (MedLine ref) attribute is <PubMedID>:<SentenceNo> -->
+<!ATTLIST resnet mref CDATA #IMPLIED>
+<!-- msrc (MedLine Sentence) attribute -->
+<!ATTLIST resnet msrc CDATA #IMPLIED>
+<!-- name attribute (Pathways, Groups, FunctionalClasses, Complexes) -->
+<!ATTLIST resnet name CDATA #IMPLIED>
+<!-- type attribute defines role -->
+<!ATTLIST resnet type (Pathway|Group|FunctionalClass|Complex) #IMPLIED>
+<!-- optional URNs to link containers (Pathways, FunctionalClasses, Complexes) 
+ with nodes -->
+<!ATTLIST resnet urn CDATA #IMPLIED>
+<!-- optional owner (user name) used for database dumps -->
+<!ATTLIST resnet owner CDATA #IMPLIED>
+<!-- optional refonly (true) used for database delete lists -->
+<!ATTLIST resnet refonly CDATA #IMPLIED>
+
+
+<!ELEMENT properties (attr*)>
+<!ELEMENT nodes (node*)>
+<!ELEMENT controls (control*)>
+<!ELEMENT attachments ((layout|thumbnail)*)>
+
+<!-- a node has local ID, urn and zero or more properties -->
+<!ELEMENT node (attr*)>
+<!-- local_id attribute should be unique within resnet -->
+<!ATTLIST node local_id CDATA #REQUIRED>
+<!-- urn attribute should be a unique AGI URN -->
+<!ATTLIST node urn CDATA #REQUIRED>
+<!-- optional owner (user name) used for database dumps -->
+<!ATTLIST node owner CDATA #IMPLIED>
+<!-- optional delete (true) used for database delete lists -->
+<!ATTLIST node delete CDATA #IMPLIED>
+
+<!-- a control has local ID, one or more links, and properties -->
+<!ELEMENT control (link*,xlink*,attr*)>
+<!-- local_id attribute should be unique within resnet -->
+<!ATTLIST control local_id CDATA #REQUIRED>
+<!-- optional owner (user name) used for database dumps -->
+<!ATTLIST control owner CDATA #IMPLIED>
+<!-- optional delete (true) used for database delete lists -->
+<!ATTLIST control delete CDATA #IMPLIED>
+
+<!-- a link connects a control to another node/control by local ID -->
+<!ELEMENT link EMPTY>
+<!-- link type attribute defines target object's role in a relation
+ defined by control; link pairs <in, out> and n-tuples <in-out, ...>
+ are used in ResNet 3.0 and later -->
+<!ATTLIST link type (in|out|in-out) #REQUIRED>
+<!-- link ref refers to another node/control by local ID -->
+<!ATTLIST link ref CDATA #REQUIRED>
+
+<!-- an xlink connects a control to a node by local ID -->
+<!ELEMENT xlink (attr*)>
+<!-- xlink type attribute defines the way in which target node
+ affects the relation defined by control; 'in' is most common type -->
+<!ATTLIST xlink type (in|out|in-out) #REQUIRED>
+<!-- xlink ref refers to a node by local ID -->
+<!ATTLIST xlink ref CDATA #REQUIRED>
+<!-- xlink effect is similar to Control's Effect property -->
+<!ATTLIST xlink effect (negative|unknown|positive) #REQUIRED>
+<!-- xlink link_id allows to refer to an xlink (future extension) -->
+<!ATTLIST xlink link_id CDATA #REQUIRED>
+
+<!-- a property (<attr>) is a name-value pair with controlled dictionary -->
+<!ELEMENT attr EMPTY>
+<!ATTLIST attr name CDATA #REQUIRED>
+<!ATTLIST attr value CDATA #REQUIRED>
+
+<!-- Name and NodeType properties must be present in nodes,
+ ControlType property must be present in controls,
+ other properties (including unlisted) are optional.
+ Some property have synonyms remapped on import; 
+ for example, 'mref' is mapped to 'MedLine Reference'
+ and 'msrc' to 'MedLine Sentence'. See the RNEF doc
+ for details on properties and their values.
+
+ ResNet properties:
+   
+    Source
+    Organism
+    ParentGroups
+    Notes
+     
+ Node properties:
+
+    NodeType = one of { 
+      Protein,  
+      CellObject,  
+      Complex,  
+      Enzyme,  
+      SmallMol,  
+      CellProcess,  
+      Treatment,  
+      FunctionalClass,
+      Disease,
+      Pathway,
+      Group,
+      Ontology,
+      Folder,
+	  GeneticVariant
+    }
+    Name
+    Alias 	
+    Source	
+    Organism
+    CAS ID	
+    HGNC ID	
+    Hugo ID	
+    HUGO Symbol	
+    PubMed ID	
+    Swiss-Prot Accession	
+    Swiss-Prot ID	
+    GenBank ID	
+    RGD ID	
+    Entrez GeneID
+    Unigene ID	
+    MGI ID	
+    PIR ID	
+    Microarray ID	
+    GO ID	
+    EC Number	
+    OMIM ID	
+    KEGG ID	
+    STKE Component ID	
+    URL	
+    Description	
+    Notes	
+    Cell Localization	
+    GO Cellular Component	
+    GO Molecular Function	
+    GO Biological Process	
+	MedScan ID	
+	SNV Type	
+	Cytogenetic Position	
+    
+ Control properties:
+       
+    ControlType = one of {
+      UnknownRegulation,  
+      ExpressionControl,  
+      Binding,  
+      DirectRegulation,  
+      PromoterBinding,  
+      MolTransport,  
+      MolSynthesis,  
+      CellObjectControl,  
+      ProtModification,
+      ChemicalReaction,
+      UnknownRelation,
+      Correlation,
+      MemberOf,	
+    }
+    Effect = one of {  
+      positive,  
+      negative,  
+      unknown
+    }
+    ExpressionMechanism = one of {
+      transcriptional,  
+      posttranscriptional
+    }
+    TransportType = one of {
+      unknown,  
+      import,  
+      export
+    }
+    Mechanism = one of {
+      promoter binding,
+      direct interaction,
+      phosphorylation,
+      desumoylation,
+      deglycosylation,
+      sumoylation,
+      arginylation,
+      acetylation,
+      deacetylation,
+      demethylation,
+      dephosphorylation,
+      methylation,
+      prenylation,
+      farnesylation,
+      geranylgeranylation,
+      GPI anchor linkage,
+      myristylation,
+      palmitoylation,
+      ribosylation,
+      alkylation,
+      biotinylation,
+      dealkylation,
+      flavinylation,
+      nitrosylation,
+      hydroxylation,
+      sulfatation,
+      glycosylation,
+      expression,
+      ...
+    }
+    mref
+    msrc
+    
+
+ Miscellaneous properties:
+    
+    Localization
+    State
+    Pathway Description
+    Linked Pathway
+    MedLine Reference
+    MedLine Sentence
+    CellType
+    Tissue
+    CellObject
+    Secondary
+    Organ
+    Disease
+    DevStage
+    Proteome Biochemical Function
+    Proteome Cellular Role
+    Proteome Organismal Role
+    Proteome Subcellular Localization
+    State Description
+    SwissProt Name
+    Class
+    DB Link
+    Gene
+    PDB ID
+    Reference
+    Chemical Mechanism
+    KEGG Pathway Map
+    Group Description
+    Activity Mechanism
+    Correlation
+	PUI
+	EMBASE
+	ESSN
+	PMID
+	ISSN
+	PubYear
+	Issue
+	PubMonth
+	Pages
+	Volume
+	PMC
+	PubTypes
+	Title
+	Journal
+	TextRef
+	DOI
+	Authors
+	MedlineTA
+	Mutation
+	Source
+	URL
+
+-->
+
+<!-- layout element for graphical information -->
+<!ELEMENT layout (styles,scene)>
+<!-- optional owner (user name) used for database dumps -->
+<!ATTLIST layout owner CDATA #IMPLIED>
+<!-- style sheet element contains styles -->
+<!ELEMENT styles (style*)>
+<!-- unique global identifier for a style sheet -->
+<!ATTLIST styles default_style_sheet CDATA #IMPLIED>
+<!-- unique identifier for a style within the style sheet -->
+<!ATTLIST style local_id CDATA #REQUIRED>
+<!-- the rest of the style is described via properties -->
+<!ELEMENT style (attr*)>
+<!-- Style properties:
+    Shape = one of { Oval, Circle, Ellipse, Rectangle, Triangle, Hexagon, Octagon, Cells, 
+                     RoundRectangle, Ellipses, O-vertex, Y-vertex, III-vertex, 2Triangles, Rhomb,
+                     Star-vertex, Stick-vertex, Sickle-vertex  }
+    Scale: real
+    FillColor:  #00RRGGBB
+    FillMode = one of { Gradient, Flat, H Gradient, V Gradient }
+    BorderColor:  #00RRGGBB
+    TextColor:  #00RRGGBB
+    Font: {italic|normal} {bold|normal} Npt family
+    LinkColor:  #00RRGGBB
+    LinkPattern = one of { Solid, LongDash, ShortDash, Dot, DashDot, DotDot }
+    LinkShape = one of { Line, Arc, NarrowCurve, StandardCurve, RoundCurve, Polyline }
+    LinkWidth:  integer      
+ -->
+
+<!-- scene is vobjs (visualizing vertices), 
+     followed by vlinks (visualizing connectors) -->
+<!ELEMENT scene (vobjs,vlinks)>
+<!-- vobjs contain zero or more vobj -->
+<!ELEMENT vobjs (vobj*)>
+<!-- unique identifier for a vobj within vobjs -->
+<!ATTLIST vobj local_id CDATA #REQUIRED>
+<!-- type attribute defines type of vobj -->
+<!ATTLIST vobj type (Node|Control|Link|Clone|Lock|Image|RingImage|Diagram|Text) #REQUIRED>
+<!-- ref attribute refers to a node or a control by their local ID -->
+<!ATTLIST vobj ref CDATA #IMPLIED>
+<!-- style_ref attribute refers to a style by its local ID -->
+<!ATTLIST vobj style_ref CDATA #IMPLIED>
+<!-- the rest of the vobj is described via properties -->
+<!ELEMENT vobj (attr*)>
+<!-- Vobj properties:
+    Position: real real
+    Size: real real
+    Scale: real
+    Angle: real
+    Localization = one of { Extracellular, Membrane, Cytoplasm, Nucleus,
+       Golgi, Mitochondria, Chloroplast, Endoplasmic reticulum }
+    Text: string-urlencoded
+    Image: string
+ -->
+
+<!-- vlinks contain zero or more vlink -->
+<!ELEMENT vlinks (vlink*)>
+<!-- vlink src_ref attribute refers to a 'source' vobj by its local ID -->
+<!ATTLIST vlink src_ref CDATA #IMPLIED>
+<!-- vlink dst_ref attribute refers to a 'destination' vobj by its local ID -->
+<!ATTLIST vlink dst_ref CDATA #IMPLIED>
+<!-- the rest of the vlink is described via properties -->
+<!ELEMENT vlink (attr*)>
+<!-- Vlink properties:
+    Oriented = one of { true, false }
+    ArrowheadShape = one of { Arrow, Block, Similar, ArrowPlus, TwoArrows, Undirected }
+ -->
+
+
+<!-- thumbnail element for graphical information -->
+<!ELEMENT thumbnail (img)>
+<!-- optional owner (user name) used for database dumps -->
+<!ATTLIST thumbnail owner CDATA #IMPLIED>
+<!-- img element is similar to HTML img -->
+<!ELEMENT img EMPTY>
+<!-- width and height should be 256 -->
+<!ATTLIST img width CDATA #FIXED "256">
+<!ATTLIST img height CDATA #FIXED "256">
+<!-- src should be data:image/png;base64 url -->
+<!ATTLIST img src CDATA #REQUIRED>
